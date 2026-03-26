@@ -2,6 +2,7 @@ import discord
 import os
 
 TOKEN = os.getenv("DISCORD_TOKEN")
+os.getenv("OPENAI_API_KEY")
 
 intents = discord.Intents.default()
 intents.message_content = True
