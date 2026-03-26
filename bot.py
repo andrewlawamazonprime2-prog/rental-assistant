@@ -17,7 +17,17 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.lower() == "hello":
-        await message.channel.send("Hey 👋 I'm your assistant!")
+    user_input = message.content
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are a helpful Discord assistant bot."},
+            {"role": "user", "content": user_input}
+        ]
+    )
+
+    reply = response["choices"][0]["message"]["content"]
+    await message.channel.send(reply)
 
 client.run(TOKEN)
