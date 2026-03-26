@@ -1,9 +1,15 @@
 import discord
 import os
+from openai import OpenAI
 
-TOKEN = os.getenv("DISCORD_TOKEN")
-os.getenv("OPENAI_API_KEY")
+# Load tokens
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
+# OpenAI client
+client_ai = OpenAI(api_key=OPENAI_API_KEY)
+
+# Discord setup
 intents = discord.Intents.default()
 intents.message_content = True
 
@@ -20,15 +26,19 @@ async def on_message(message):
 
     user_input = message.content
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": "You are a helpful Discord assistant bot."},
-            {"role": "user", "content": user_input}
-        ]
-    )
+    try:
+        response = client_ai.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are a helpful Discord assistant bot."},
+                {"role": "user", "content": user_input}
+            ]
+        )
 
-    reply = response["choices"][0]["message"]["content"]
-    await message.channel.send(reply)
+        reply = response.choices[0].message.content
+        await message.channel.send(reply)
 
-client.run(TOKEN)
+    except Exception as e:
+        await message.channel.send(f"Error: {str(e)}")
+
+client.run(DISCORD_TOKEN)
